@@ -22,7 +22,7 @@ Chocolatey is a package manager for Windows that allows you to easily install va
 Once you have Chocolatey installed, you can use it to install your desired programs efficiently. Here's how you can install multiple programs at once using Chocolatey through CMD:
 
 1. Open the CMD with administrator privileges.
-2. Copy and paste the following command into the CMD window and press Enter:
+2. After modifying which programs you want, copy and paste the following command into the CMD window and press Enter:
 
 ```shell
 choco install googlechrome discord bitwarden steam geforce-experience amd-ryzen-master equalizerapo 7zip f.lux python qbittorrent vscode everything wiztree joytokey revo-uninstaller -y
