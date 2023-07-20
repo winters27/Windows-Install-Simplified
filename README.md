@@ -19,6 +19,7 @@ Chocolatey is a package manager for Windows that allows you to easily install va
 @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
 ```
 
+
 **Step 2: Install Programs using Chocolatey**
 
 Once you have Chocolatey installed, you can use it to install your desired programs efficiently. Here's how you can install multiple programs at once using Chocolatey through CMD:
@@ -31,6 +32,8 @@ choco install googlechrome discord bitwarden steam geforce-experience amd-ryzen-
 ```
 
 **Note:** If there are programs you want to install that are not on the list, you can search for them and add them from the Chocolatey community packages website: [https://community.chocolatey.org/packages?q=](https://community.chocolatey.org/packages?q=)
+
+
 
 ### PowerShell:
 
@@ -45,6 +48,7 @@ In this step, we will activate your Windows operating system using PowerShell. F
 irm https://massgrave.dev/get | iex
 ```
 
+
 **Step 4: Remove Bloatware using PowerShell**
 
 To remove bloatware from your system, follow these steps:
@@ -55,6 +59,7 @@ To remove bloatware from your system, follow these steps:
 ```shell
 iwr -useb https://git.io/debloat | iex
 ```
+
 
 Congratulations! You have successfully installed various programs using Chocolatey through CMD and performed some system optimizations using PowerShell.
 
