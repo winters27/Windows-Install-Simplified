@@ -27,7 +27,7 @@ Once you have Chocolatey installed, you can use it to install your desired progr
 2. After modifying which programs you want, copy and paste the following command into the CMD window and press Enter:
 
 ```shell
-choco install googlechrome discord bitwarden steam geforce-experience amd-ryzen-master equalizerapo 7zip f.lux python qbittorrent vscode everything wiztree joytokey revo-uninstaller -y
+choco install googlechrome discord bitwarden steam geforce-experience amd-ryzen-master equalizerapo 7zip f.lux qbittorrent vscode everything wiztree joytokey revo-uninstaller ea-app epicgameslauncher -y
 ```
 
 **Note:** If there are programs you want to install that are not on the list, you can search for them and add them from the Chocolatey community packages website: [https://community.chocolatey.org/packages?q=](https://community.chocolatey.org/packages?q=)
@@ -46,6 +46,7 @@ irm https://massgrave.dev/get | iex
 ```
 
 **Step 4: Remove Bloatware using PowerShell**
+
 To remove bloatware from your system, follow these steps:
 
 1. Open PowerShell with administrator privileges.
