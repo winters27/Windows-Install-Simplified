@@ -20,6 +20,7 @@ Chocolatey is a package manager for Windows that allows you to easily install va
 ```
 
 **Step 2: Install Programs using Chocolatey**
+
 Once you have Chocolatey installed, you can use it to install your desired programs efficiently. Here's how you can install multiple programs at once using Chocolatey through CMD:
 
 1. Open the CMD with administrator privileges.
@@ -34,6 +35,7 @@ choco install googlechrome discord bitwarden steam geforce-experience amd-ryzen-
 ### PowerShell:
 
 **Step 3: Activate Windows 8.1/10/11**
+
 In this step, we will activate your Windows operating system using PowerShell. Follow these steps:
 
 1. Open PowerShell with administrator privileges.
