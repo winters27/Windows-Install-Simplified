@@ -9,6 +9,7 @@ In this tutorial, we will guide you through the process of installing software a
 ### CMD:
 
 **Step 1: Install Chocolatey**
+
 Chocolatey is a package manager for Windows that allows you to easily install various software packages. To install Chocolatey, follow these steps:
 
 1. Open the Command Prompt (CMD) with administrator privileges.
