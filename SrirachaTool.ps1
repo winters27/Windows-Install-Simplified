@@ -21,9 +21,9 @@ $ProgramListTextBox.ScrollBars = "Vertical"
 
 # Default program list
 $global:defaultProgramList = @(
-    "googlechrome",
-    "discord",
     "bitwarden",
+    "discord",
+    "googlechrome",
     "steam",
     "geforce-experience",
     "amd-ryzen-master",
@@ -33,7 +33,13 @@ $global:defaultProgramList = @(
     "qbittorrent",
     "vscode",
     "joytokey",
-    "revo-uninstaller"
+    "revo-uninstaller",
+    "ea-app",
+    "via",
+    "samsung-magician",
+    "streamlabs-obs",
+    "epicgameslauncher",
+    "python"
 )
 
 # Function to save the program list to an XML file
@@ -63,12 +69,24 @@ function Load-ProgramListFromXml {
 # Call the Load-ProgramListFromXml function to load the saved list when the application starts
 Load-ProgramListFromXml
 
-$SaveListButton = New-Object system.Windows.Forms.Button
+$SaveListButton = New-Object System.Windows.Forms.Button
 $SaveListButton.Text = "Save List"
 $SaveListButton.AutoSize = $true
 $SaveListButton.Location = New-Object System.Drawing.Point(339, 320)
 $SaveListButton.Font = New-Object System.Drawing.Font('Yu Gothic UI', 12)
-$SaveListButton.ForeColor = [System.Drawing.ColorTranslator]::FromHtml("#eeeeee")
+$SaveListButton.ForeColor = [System.Drawing.ColorTranslator]::FromHtml("#eeeeee")  # Set text color
+
+$originalSaveListColor = [System.Drawing.Color]::FromArgb([System.Int32]::Parse("eeeeee", [System.Globalization.NumberStyles]::HexNumber))
+
+$SaveListButton.Add_MouseEnter({
+    $SaveListButton.ForeColor = (ChangeBrightness -color $originalSaveListColor -factor 0.8)  # Darken the color on hover
+    $SaveListButton.Cursor = [System.Windows.Forms.Cursors]::Hand
+})
+
+$SaveListButton.Add_MouseLeave({
+    $SaveListButton.ForeColor = [System.Drawing.ColorTranslator]::FromHtml("#eeeeee")  # Restore the original color
+    $SaveListButton.Cursor = [System.Windows.Forms.Cursors]::Default
+})
 
 # Event handler for the "Save List" button click
 $SaveListButton.Add_Click({
@@ -113,13 +131,29 @@ function Run-WindowsActivator {
     Invoke-Expression (Invoke-RestMethod -Uri "https://massgrave.dev/get")
 }
 
-$WindowsActivationButton = New-Object system.Windows.Forms.Button
+$WindowsActivationButton = New-Object System.Windows.Forms.Button
 $WindowsActivationButton.Text = "Run Windows Activator"
 $WindowsActivationButton.Width = 320
 $WindowsActivationButton.Height = 49
 $WindowsActivationButton.Location = New-Object System.Drawing.Point(90, 523)
-$WindowsActivationButton.Font = New-Object System.Drawing.Font('Yu Gothic UI', 12)
-$WindowsActivationButton.ForeColor = [System.Drawing.ColorTranslator]::FromHtml("#eeeeee")
+$WindowsActivationButton.Font = New-Object System.Drawing.Font('Yu Gothic UI', 12, [System.Drawing.FontStyle]::Bold)  # Set font to bold
+$WindowsActivationButton.BackColor = "White"  # Set background color to white
+$WindowsActivationButton.ForeColor = [System.Drawing.ColorTranslator]::FromHtml("#0074D9")  # Blue color
+$WindowsActivationButton.FlatStyle = "Flat"
+$WindowsActivationButton.FlatAppearance.BorderSize = 0
+$WindowsActivationButton.AutoSize = $true
+
+$originalActivationColor = [System.Drawing.Color]::FromArgb([System.Int32]::Parse("0074D9", [System.Globalization.NumberStyles]::HexNumber))
+
+$WindowsActivationButton.Add_MouseEnter({
+    $WindowsActivationButton.BackColor = (ChangeBrightness -color $originalActivationColor -factor 1.2)  # Lighten the color on hover
+    $WindowsActivationButton.Cursor = [System.Windows.Forms.Cursors]::Hand
+})
+
+$WindowsActivationButton.Add_MouseLeave({
+    $WindowsActivationButton.BackColor = [System.Drawing.Color]::White  # Restore the original color (white background)
+    $WindowsActivationButton.Cursor = [System.Windows.Forms.Cursors]::Default
+})
 
 # Event handler for the "Run Windows Activator" button click
 $WindowsActivationButton.Add_Click({
@@ -134,13 +168,29 @@ function Run-WindowsDebloater {
     Invoke-Expression (Invoke-WebRequest -Uri "https://git.io/debloat" -UseBasicParsing).Content
 }
 
-$WindowsDebloaterButton = New-Object system.Windows.Forms.Button
+$WindowsDebloaterButton = New-Object System.Windows.Forms.Button
 $WindowsDebloaterButton.Text = "Run Windows Debloater"
 $WindowsDebloaterButton.Width = 320
 $WindowsDebloaterButton.Height = 49
 $WindowsDebloaterButton.Location = New-Object System.Drawing.Point(90, 609)
-$WindowsDebloaterButton.Font = New-Object System.Drawing.Font('Yu Gothic UI', 12)
-$WindowsDebloaterButton.ForeColor = [System.Drawing.ColorTranslator]::FromHtml("#eeeeee")
+$WindowsDebloaterButton.Font = New-Object System.Drawing.Font('Yu Gothic UI', 12, [System.Drawing.FontStyle]::Bold)  # Set font to bold
+$WindowsDebloaterButton.BackColor = "White"  # Set background color to white
+$WindowsDebloaterButton.ForeColor = [System.Drawing.ColorTranslator]::FromHtml("#FF851B")  # Orange color
+$WindowsDebloaterButton.FlatStyle = "Flat"
+$WindowsDebloaterButton.FlatAppearance.BorderSize = 0
+$WindowsDebloaterButton.AutoSize = $true
+
+$originalDebloaterColor = [System.Drawing.Color]::FromArgb([System.Int32]::Parse("FF851B", [System.Globalization.NumberStyles]::HexNumber))
+
+$WindowsDebloaterButton.Add_MouseEnter({
+    $WindowsDebloaterButton.BackColor = (ChangeBrightness -color $originalDebloaterColor -factor 1.2)  # Lighten the color on hover
+    $WindowsDebloaterButton.Cursor = [System.Windows.Forms.Cursors]::Hand
+})
+
+$WindowsDebloaterButton.Add_MouseLeave({
+    $WindowsDebloaterButton.BackColor = [System.Drawing.Color]::White  # Restore the original color (white background)
+    $WindowsDebloaterButton.Cursor = [System.Windows.Forms.Cursors]::Default
+})
 
 # Event handler for the "Run Windows Debloater" button click
 $WindowsDebloaterButton.Add_Click({
@@ -206,26 +256,67 @@ function Install-Programs {
 
 
 
-# Event handler for the Install Programs button click
-$InstallProgramListButton = New-Object system.Windows.Forms.Button
+# Function to adjust the brightness of a color
+function ChangeBrightness {
+    param(
+        [System.Drawing.Color]$color,
+        [double]$factor
+    )
+    $newColor = $color.GetBrightness() * $factor
+    return [System.Drawing.Color]::FromArgb($color.A, $color.R * $newColor, $color.G * $newColor, $color.B * $newColor)
+}
+
+$InstallProgramListButton = New-Object System.Windows.Forms.Button
 $InstallProgramListButton.Text = "Install Programs"
 $InstallProgramListButton.Width = 320
 $InstallProgramListButton.Height = 49
 $InstallProgramListButton.Location = New-Object System.Drawing.Point(90, 368)
-$InstallProgramListButton.Font = New-Object System.Drawing.Font('Yu Gothic UI', 12)
-$InstallProgramListButton.ForeColor = [System.Drawing.ColorTranslator]::FromHtml("#7ed321")
+$InstallProgramListButton.Font = New-Object System.Drawing.Font('Yu Gothic UI', 12, [System.Drawing.FontStyle]::Bold)
+$InstallProgramListButton.BackColor = "#7ED321"  # Starting color
+$InstallProgramListButton.ForeColor = "Black"
+$InstallProgramListButton.FlatStyle = "Flat"
+$InstallProgramListButton.FlatAppearance.BorderSize = 0
+$InstallProgramListButton.AutoSize = $true
+
+$originalColor = [System.Drawing.Color]::FromArgb([System.Int32]::Parse("7ED321", [System.Globalization.NumberStyles]::HexNumber))
+
+$InstallProgramListButton.Add_MouseEnter({
+    $InstallProgramListButton.BackColor = (ChangeBrightness -color $originalColor -factor 1.2)  # Lighten the color on hover
+    $InstallProgramListButton.Cursor = [System.Windows.Forms.Cursors]::Hand
+})
+
+$InstallProgramListButton.Add_MouseLeave({
+    $InstallProgramListButton.BackColor = [System.Drawing.ColorTranslator]::FromHtml("#7ED321")  # Restore the original color
+    $InstallProgramListButton.Cursor = [System.Windows.Forms.Cursors]::Default
+})
 $InstallProgramListButton.Add_Click({
     Install-Chocolatey
     Install-Programs
 })
 
-$UninstallProgramsButton = New-Object system.Windows.Forms.Button
+$UninstallProgramsButton = New-Object System.Windows.Forms.Button
 $UninstallProgramsButton.Text = "Uninstall Programs"
 $UninstallProgramsButton.Width = 320
 $UninstallProgramsButton.Height = 49
 $UninstallProgramsButton.Location = New-Object System.Drawing.Point(90, 444)
-$UninstallProgramsButton.Font = New-Object System.Drawing.Font('Yu Gothic UI', 12)
-$UninstallProgramsButton.ForeColor = [System.Drawing.ColorTranslator]::FromHtml("#d0021b") # Red color
+$UninstallProgramsButton.Font = New-Object System.Drawing.Font('Yu Gothic UI', 12, [System.Drawing.FontStyle]::Bold)
+$UninstallProgramsButton.BackColor = "#d0021b"  # Red color
+$UninstallProgramsButton.ForeColor = "Black"     # Set text color to white for better contrast
+$UninstallProgramsButton.FlatStyle = "Flat"
+$UninstallProgramsButton.FlatAppearance.BorderSize = 0
+$UninstallProgramsButton.AutoSize = $true
+
+$originalUninstallColor = [System.Drawing.Color]::FromArgb([System.Int32]::Parse("d0021b", [System.Globalization.NumberStyles]::HexNumber))
+
+$UninstallProgramsButton.Add_MouseEnter({
+    $UninstallProgramsButton.BackColor = (ChangeBrightness -color $originalUninstallColor -factor 1.2)  # Lighten the color on hover
+    $UninstallProgramsButton.Cursor = [System.Windows.Forms.Cursors]::Hand
+})
+
+$UninstallProgramsButton.Add_MouseLeave({
+    $UninstallProgramsButton.BackColor = [System.Drawing.ColorTranslator]::FromHtml("#d0021b")  # Restore the original color
+    $UninstallProgramsButton.Cursor = [System.Windows.Forms.Cursors]::Default
+})
 
 function Uninstall-Programs {
     $ProgramList = $ProgramListTextBox.Text -split [Environment]::NewLine
