@@ -9,7 +9,7 @@ $SrirachaTool.ShowIcon = $false
 $SrirachaTool.BackColor = [System.Drawing.ColorTranslator]::FromHtml("#252525")
 $SrirachaTool.AcceptButton = $null
 
-$ProgramListTextBox = New-Object system.Windows.Forms.TextBox
+$ProgramListTextBox = New-Object System.Windows.Forms.TextBox
 $ProgramListTextBox.Multiline = $true
 $ProgramListTextBox.Width = 395
 $ProgramListTextBox.Height = 254
@@ -19,6 +19,41 @@ $ProgramListTextBox.ForeColor = [System.Drawing.ColorTranslator]::FromHtml("#39F
 $ProgramListTextBox.BackColor = [System.Drawing.Color]::Black  # Set the background color to black
 $ProgramListTextBox.ScrollBars = "Vertical"
 
+$currentIndex = 1  # Initialize the line number to 1
+$ProgramListTextBox.AppendText("1. ")  # Add the initial line number
+
+# Event handler for the KeyDown event of the ProgramListTextBox
+$ProgramListTextBox.Add_KeyDown({
+    param($sender, $eventArgs)
+
+    # Check if the pressed key is the Enter key (key code 13)
+    if ($eventArgs.KeyCode -eq 13) {
+        # Prevent the new line from being added
+        $eventArgs.SuppressKeyPress = $true
+
+        # Count the number of lines with characters
+        $linesWithText = $ProgramListTextBox.Lines | Where-Object { $_ -match '\S' }
+
+        # Increment the line number if there are lines with text
+        if ($linesWithText) {
+            $currentIndex = $linesWithText.Count + 1
+        }
+
+        # Append the new line with the appropriate number
+        $ProgramListTextBox.AppendText("`r`n$($currentIndex). ")
+    }
+})
+
+# Event handler for the TextChanged event of the ProgramListTextBox
+$ProgramListTextBox.Add_TextChanged({
+    param($sender, $eventArgs)
+
+    # If the text box is empty, re-add "1." at the beginning
+    if ($ProgramListTextBox.Text -eq "") {
+        $ProgramListTextBox.Text = "1. "
+    }
+})
+
 # Default program list
 $global:defaultProgramList = @(
     "bitwarden",
@@ -27,19 +62,25 @@ $global:defaultProgramList = @(
     "steam",
     "geforce-experience",
     "amd-ryzen-master",
-    "equalizerapo",
+    "https://github.com/Rem0o/FanControl.Releases/releases/download/V147/FanControl_net_7_0.zip",
     "7zip",
     "f.lux",
     "qbittorrent",
     "vscode",
     "joytokey",
     "revo-uninstaller",
-    "ea-app",
+    "equalizerapo",
     "via",
     "samsung-magician",
     "streamlabs-obs",
     "epicgameslauncher",
-    "python"
+    "python",
+    "https://apps.microsoft.com/store/detail/microsoft-powertoys/XP89DCGQ3K6VLD",
+    "https://robertsspaceindustries.com/download",
+    "https://www.rewasd.com/#install-rewasd",
+    "https://www.blizzard.com/download/confirmation?product=bnetdesk",
+    "https://downloads.surfshark.com/windows/latest/SurfsharkSetup.exe"
+
 )
 
 # Function to save the program list to an XML file
@@ -53,18 +94,24 @@ function Save-ProgramListToXml {
     $programList | Export-Clixml -Path $xmlFilePath
 }
 
-
 # Function to load the program list from the XML file or use the default list
 function Load-ProgramListFromXml {
     $xmlFilePath = Join-Path $scriptDirectory "program_list.xml"
     if (Test-Path $xmlFilePath) {
         $programList = Import-Clixml -Path $xmlFilePath
-        $ProgramListTextBox.Text = $programList -join [Environment]::NewLine
     } else {
-        $ProgramListTextBox.Text = $global:defaultProgramList -join [Environment]::NewLine
+        $programList = $global:defaultProgramList
     }
-}
 
+    # Add item numbers to the list
+    $programListWithNumbers = @()
+    for ($i = 0; $i -lt $programList.Count; $i++) {
+        $itemNumber = $i + 1
+        $programListWithNumbers += "$itemNumber. $($programList[$i])"
+    }
+
+    $ProgramListTextBox.Text = $programListWithNumbers -join [Environment]::NewLine
+}
 
 # Call the Load-ProgramListFromXml function to load the saved list when the application starts
 Load-ProgramListFromXml
@@ -96,13 +143,24 @@ $SaveListButton.Add_Click({
 })
 
 $Label1 = New-Object system.Windows.Forms.Label
-$Label1.Text = "Add or remove programs from the installation list:"
+$Label1.Text = "Manage programs in the installation list: Add or Remove:"
 $Label1.AutoSize = $true
 $Label1.Width = 25
 $Label1.Height = 10
-$Label1.Location = New-Object System.Drawing.Point(104, 15)
+$Label1.Location = New-Object System.Drawing.Point(85, 15)
 $Label1.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
 $Label1.ForeColor = [System.Drawing.ColorTranslator]::FromHtml("#eeeeee")
+
+$InfoIcon = [System.Drawing.SystemIcons]::Information.ToBitmap()
+$smallInfoIcon = (New-Object System.Drawing.Bitmap $InfoIcon, 16, 16) # Set the custom size here (e.g., 16x16)
+$InfoPictureBox = New-Object System.Windows.Forms.PictureBox
+$InfoPictureBox.Image = $smallInfoIcon
+$InfoPictureBox.SizeMode = 'AutoSize'
+$InfoPictureBox.Location = New-Object System.Drawing.Point(62, 14)
+
+# Add tooltip to the informational icon
+$tooltip = New-Object System.Windows.Forms.ToolTip
+$tooltip.SetToolTip($InfoPictureBox, "You can add entries to the list using either Chocolatey package names or direct URLs for other downloads.")
 
 $Label2 = New-Object system.Windows.Forms.Label
 $Label2.Text = "by Winters"
@@ -118,6 +176,7 @@ $SrirachaTool.Controls.Add($SaveListButton)
 $SrirachaTool.Controls.Add($WindowsDebloaterButton)
 $SrirachaTool.Controls.Add($InstallProgramListButton)
 $SrirachaTool.Controls.Add($UninstallProgramsButton)
+$SrirachaTool.Controls.Add($InfoPictureBox)
 $SrirachaTool.Controls.Add($Label1)
 $SrirachaTool.Controls.Add($Label2)
 $SrirachaTool.Controls.Add($ProgramListTextBox)
@@ -234,26 +293,35 @@ function Is-ProgramInstalled {
     return $false
 }
 
+# Global variable to keep track of the current index
+$global:currentIndex = 1
+
 # Function to install programs from the list
 function Install-Programs {
-    $ProgramList = $ProgramListTextBox.Text -split [Environment]::NewLine
+    $ProgramList = $ProgramListTextBox.Lines
 
     # Loop through the list and install each program if not already installed
-    foreach ($program in $ProgramList) {
+    foreach ($programLine in $ProgramList) {
+        # Remove the number prefix from the line (e.g., "1. Program Name" -> "Program Name")
+        $program = $programLine -replace '^\d+\.\s*', ''
         $program = $program.Trim()
+
         if ($program -ne "") {
             if (-Not (Is-ProgramInstalled $program)) {
-                Write-Host "Installing $program..."
+                Write-Host "Installing $program (Item $global:currentIndex of $($ProgramList.Count))..."
                 choco install $program -y
             } else {
-                Write-Host "Skipping installation of $program as it is already installed."
+                Write-Host "Skipping installation of $program as it is already installed (Item $global:currentIndex of $($ProgramList.Count))..."
             }
         }
+
+        $global:currentIndex++
     }
 
+    # Reset currentIndex for the next operation
+    $global:currentIndex = 1
     Write-Host "Program installation completed."
 }
-
 
 
 # Function to adjust the brightness of a color
@@ -318,22 +386,26 @@ $UninstallProgramsButton.Add_MouseLeave({
     $UninstallProgramsButton.Cursor = [System.Windows.Forms.Cursors]::Default
 })
 
+# Function to uninstall programs from the list
 function Uninstall-Programs {
-    $ProgramList = $ProgramListTextBox.Text -split [Environment]::NewLine
+    $ProgramList = $ProgramListTextBox.Lines
 
-    foreach ($program in $ProgramList) {
+    foreach ($programLine in $ProgramList) {
+        # Remove the number prefix from the line (e.g., "1. Program Name" -> "Program Name")
+        $program = $programLine -replace '^\d+\.\s*', ''
         $program = $program.Trim()
+
         if ($program -ne "") {
             # Try uninstalling via Chocolatey first
             $chocoOutput = choco uninstall $program -y 2>&1
             if ($chocoOutput -match "has been uninstalled") {
-                Write-Host "$program has been uninstalled via Chocolatey."
+                Write-Host "$program has been uninstalled via Chocolatey (Item $global:currentIndex of $($ProgramList.Count))..."
             } else {
-                Write-Host "Uninstalling $program using general method..."
+                Write-Host "Uninstalling $program using general method (Item $global:currentIndex of $($ProgramList.Count))..."
                 # Use a general method to uninstall the program (e.g., using msiexec.exe)
                 $uninstallArgs = "/x $program /quiet"
                 Start-Process -FilePath "msiexec.exe" -ArgumentList $uninstallArgs -Wait
-                Write-Host "$program has been uninstalled using the general method."
+                Write-Host "$program has been uninstalled using the general method (Item $global:currentIndex of $($ProgramList.Count))..."
             }
 
             # Remove the desktop shortcut
@@ -344,18 +416,20 @@ function Uninstall-Programs {
                 Write-Host "Desktop shortcut for $program has been removed."
             }
         }
+
+        $global:currentIndex++
     }
 
+    # Reset currentIndex for the next operation
+    $global:currentIndex = 1
     Write-Host "Program uninstallation and shortcut removal completed."
 }
-
-
 
 $UninstallProgramsButton.Add_Click({
     Uninstall-Programs
 })
 
-$SrirachaTool.controls.AddRange(@($WindowsActivationButton, $SaveListButton, $WindowsDebloaterButton, $InstallProgramListButton, $UninstallProgramsButton, $Label1, $Label2, $ProgramListTextBox))
+$SrirachaTool.controls.AddRange(@($WindowsActivationButton, $SaveListButton, $WindowsDebloaterButton, $InstallProgramListButton, $UninstallProgramsButton, $Label1, $InfoPictureBox, $Label2, $ProgramListTextBox))
 
 
 
